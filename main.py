@@ -1,10 +1,10 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 import os
 from flask import Flask, request, jsonify
 from llm.prompter import prompt
 
-from dotenv import load_dotenv
-
-load_dotenv()
 
 app = Flask(__name__)
 
