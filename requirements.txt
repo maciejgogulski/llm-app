@@ -5,3 +5,5 @@ ollama
 dotenv
 faiss-cpu
 pypdf
+mysql.connector
+
