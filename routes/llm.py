@@ -1,7 +1,7 @@
 import logging
 from flask import Blueprint, request, jsonify
 from llm.prompter import prompt
-from rag.rag import perform_rag
+from llm.rag import perform_rag
 
 bp = Blueprint('llm', __name__, url_prefix='/llm')
 

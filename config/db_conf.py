@@ -1,5 +1,6 @@
 import os
 import mysql.connector
+from typing import List, Dict, Any, Optional
 
 def get_connection():
     return mysql.connector.connect(
@@ -10,7 +11,8 @@ def get_connection():
         password=os.getenv("DB_PASSWORD"),
     )
 
-def query(sql, params=None):
+
+def query(sql: str, params: Optional[dict] = None) -> List[Dict[str, Any]]:
     conn = get_connection()
     try:
         cursor = conn.cursor(dictionary=True)

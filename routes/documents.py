@@ -1,7 +1,7 @@
 import logging
 import os
 from flask import Blueprint, request, jsonify
-from config.db_conf import execute, query
+import db.repo as repo
 
 bp = Blueprint('documents', __name__, url_prefix='/documents')
 
@@ -10,7 +10,7 @@ DOCUMENT_STORAGE_PATH = os.getenv('DOCUMENT_STORAGE_PATH', './uploads')
 
 @bp.route('/', methods=['POST'])
 def upload_document():
-    LOG.info("Recieved upload-document request")
+    LOG.info("Recieved upload_document request")
     uploaded_file = request.files.get('file')
 
     if uploaded_file and uploaded_file.filename.endswith('.pdf'):
@@ -19,20 +19,10 @@ def upload_document():
         uploaded_file.save(save_path)
 
         try:
-            execute("""
-                  INSERT INTO documents
-                  (filename, filepath)
-                  VALUES
-                  (%(filename)s, %(filepath)s)
-                """, 
-                {
-                      "filename": uploaded_file.filename,
-                      "filepath": save_path
-                }
-            )
+            repo.insert_document(uploaded_file.filename, save_path)
+            
         except Exception as ex: 
             LOG.error(f"DB error occured: {ex}")
-            
             return "DB error", 500
         
         return f"Saved to {save_path}", 200
@@ -40,16 +30,12 @@ def upload_document():
 
 @bp.route('/', methods=['GET'])
 def get_documents():
+    LOG.info("Recieved get_documents request")
     try:
-        documents = query("""
-            SELECT filename, 
-                filepath, 
-                DATE_FORMAT(added_at, '%Y-%m-%d %H:%i:%s') AS added_at,
-                DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at
-            FROM documents
-        """)
+        documents = repo.fetch_documents()
     except Exception as ex:
         LOG.error(f"DB error occured: {ex}")
         return "DB error", 500
 
     return jsonify(documents)
+

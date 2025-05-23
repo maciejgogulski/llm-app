@@ -1,4 +1,3 @@
-
 version: '3.8'
 
 services:
@@ -43,8 +42,7 @@ services:
       - "11434:11434"
     volumes:
       - ollama_models:/root/.ollama
-    entrypoint: ["ollama", "run", "tinyllama"]
-
+    
 volumes:
   mariadb_data:
   ollama_models:
