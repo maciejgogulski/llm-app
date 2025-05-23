@@ -1,5 +1,6 @@
 from .llm import bp as llm_bp
 from .documents import bp as documents_bp
+import os
 
 # Optional helper to register all routes at once
 def register_blueprints(app):

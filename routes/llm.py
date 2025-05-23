@@ -5,11 +5,11 @@ from rag.rag import perform_rag
 
 bp = Blueprint('llm', __name__, url_prefix='/llm')
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 @bp.route('/prompt', methods=['POST'])
 def prompt_route():
-    log.info("Recieved prompt request")
+    LOG.info("Recieved prompt request")
     data = request.get_json()
     if not data or 'prompt' not in data:
         return jsonify({"error": "Missing 'prompt' in request body"}), 400
@@ -20,7 +20,7 @@ def prompt_route():
 
 @bp.route('/rag', methods=['POST'])
 def rag_route():
-    log.info("Recieved RAG request")
+    LOG.info("Recieved RAG request")
     data = request.get_json()
     if not data or 'prompt' not in data:
         return jsonify({"error": "Missing 'prompt' in request body"}), 400

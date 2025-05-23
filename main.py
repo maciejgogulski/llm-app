@@ -1,11 +1,13 @@
 from dotenv import load_dotenv
+load_dotenv()
+
 from config.logging_conf import setup_logging
+setup_logging()
+
 from routes import register_blueprints
 from flask import Flask
 import os
 
-load_dotenv()
-setup_logging()
 
 def create_app():
     app = Flask(__name__)

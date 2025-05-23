@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:lts
+    container_name: mariadb
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpass
+      MARIADB_DATABASE: llm
+      MARIADB_USER: llm_user
+      MARIADB_PASSWORD: llm_password
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  flyway:
+    image: flyway/flyway
+    container_name: flyway
+    depends_on:
+      - mariadb
+    command: >
+      -url=jdbc:mariadb://mariadb:3306/llm
+      -user=llm_user
+      -password=llm_password
+      -connectRetries=10
+      migrate
+    volumes:
+      - ${PWD}/sql:/flyway/sql
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    # Optional: pre-load a model at startup (tinyllama in this example)
+    entrypoint: ["ollama", "run", "tinyllama"]
+
+volumes:
+  mariadb_data:
+  ollama_models:
