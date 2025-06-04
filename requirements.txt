@@ -1,9 +1,9 @@
 flask
 langchain
+langchain-ollama
 langchain-community
 ollama
 dotenv
 faiss-cpu
 pypdf
 mysql.connector
-
