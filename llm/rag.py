@@ -38,7 +38,7 @@ def load_all_documents(pdf_documents_rows):
 
 
 def chunk_data(documents):
-    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100) # TODO Export to env variable.
+    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50) # TODO Export to env variable.
     chunks = splitter.split_documents(documents)
 
     return chunks
@@ -57,7 +57,7 @@ def vectorize_documents(chunks):
 def build_qa_chain(model, vectorstore):
     return RetrievalQA.from_chain_type(
         llm=model,
-        retriever=vectorstore.as_retriever(),
+        retriever=vectorstore.as_retriever(search_kwargs={"k": 10}),
         return_source_documents=False
     )
 
