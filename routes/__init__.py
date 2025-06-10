@@ -1,10 +1,8 @@
 from .llm import bp as llm_bp
 from .documents import bp as documents_bp
-from frontend.routes import bp as frontend_bp
 import os
 
 # Optional helper to register all routes at once
 def register_blueprints(app):
     app.register_blueprint(llm_bp)
     app.register_blueprint(documents_bp)
-    app.register_blueprint(frontend_bp)
