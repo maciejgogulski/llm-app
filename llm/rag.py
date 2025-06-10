@@ -38,6 +38,7 @@ def load_all_documents(pdf_documents_rows):
 
 
 def chunk_data(documents):
+    LOG.debug("Chunking data...")
     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50) # TODO Export to env variable.
     chunks = splitter.split_documents(documents)
 
@@ -45,16 +46,29 @@ def chunk_data(documents):
 
 
 def vectorize_documents(chunks):
+    LOG.debug("Vectorizing documents...")
+
     embedding_model_env = os.getenv('EMBEDDING_MODEL')
     if not embedding_model_env:
+        LOG.error("EMBEDDING_MODEL environment variable is not set")
         raise ValueError("EMBEDDING_MODEL environment variable is not set")
-
+    
     embedding_model = OllamaEmbeddings(model=embedding_model_env)
     
-    return FAISS.from_documents(chunks, embedding_model)
+    vectorstore_path = os.getenv('VECTORSTORE_PATH', 'faiss_index')
+
+    if os.path.exists(f"{vectorstore_path}/index.faiss"):
+        LOG.debug("Loading vectorstore from file...")
+        vectorstore = FAISS.load_local(vectorstore_path, embedding_model)
+    else:
+        LOG.debug("Building vectorstore from documents...")
+        vectorstore = FAISS.from_documents(chunks, embedding_model)
+
+    return vectorstore
 
 
 def build_qa_chain(model, vectorstore):
+    LOG.debug("Building QA chain...")
     return RetrievalQA.from_chain_type(
         llm=model,
         retriever=vectorstore.as_retriever(search_kwargs={"k": 10}),
@@ -63,6 +77,7 @@ def build_qa_chain(model, vectorstore):
 
 
 def run_chain(chain, prompt: str):
+    LOG.debug("Running chain...")
     return chain(prompt)
 
 
@@ -78,5 +93,4 @@ def perform_rag(prompt: str):
     chain = build_qa_chain(OllamaLLM(model=model), vectorstore)
 
     return run_chain(chain, prompt)
-
 
