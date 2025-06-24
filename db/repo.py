@@ -1,16 +1,17 @@
 from config.db_conf import execute, query
 from typing import List, Dict, Any, Optional
 
-def insert_document(filename, filepath):
+def insert_document(filename, filepath, checksum):
     execute("""
             INSERT INTO documents
-                (filename, filepath)
+                (filename, filepath, checksum)
             VALUES
-                (%(filename)s, %(filepath)s);
+                (%(filename)s, %(filepath)s, %(checksum)s);
         """, 
         {
             "filename": filename,
-            "filepath": filepath
+            "filepath": filepath,
+            "checksum": checksum
         }
     )
 
@@ -35,3 +36,8 @@ def delete_document(filename):
             "filename": filename
         }
     )
+
+def document_exists_by_checksum(checksum_bytes) -> bool:
+    sql = "SELECT 1 FROM documents WHERE checksum = %s LIMIT 1"
+    result = query(sql, (checksum_bytes,))
+    return bool(result)
