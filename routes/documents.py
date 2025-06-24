@@ -9,7 +9,7 @@ LOG = logging.getLogger(__name__)
 DOCUMENT_STORAGE_PATH = os.getenv('DOCUMENT_STORAGE_PATH', './uploads')
 
 @bp.route('/', methods=['POST'])
-def upload_document():
+def upload_document_route():
     LOG.info("Recieved upload_document request")
     uploaded_file = request.files.get('file')
 
@@ -29,7 +29,7 @@ def upload_document():
     return "Invalid file", 400
 
 @bp.route('/', methods=['GET'])
-def get_documents():
+def get_documents_route():
     LOG.info("Recieved get_documents request")
     try:
         documents = repo.fetch_documents()
@@ -38,4 +38,17 @@ def get_documents():
         return "DB error", 500
 
     return jsonify(documents)
+
+
+@bp.route('/<filename>', methods=['DELETE'])
+def delete_document_route(filename):
+    LOG.info("Recieved delete_document request")
+    try:
+        repo.delete_document(filename)
+    except Exception as ex: 
+        LOG.error(f"DB error occured: {ex}")
+        return "DB error", 500
+        
+    return f"Deleted document{filename}", 200
+
 
