@@ -7,6 +7,7 @@ class TestDocumentsRoutes(TestCase):
     def setUp(self):
         self.app = create_app()
         self.client = self.app.test_client()
+        self.app.testing = True
 
 
     def test_upload_documents_route_success(self):
@@ -84,8 +85,8 @@ class TestDocumentsRoutes(TestCase):
         """
 
         with mock.patch('routes.documents.compute_checksum') as mock_compute_checksum, \
-             mock.patch('db.repo.document_exists_by_checksum') as mock_document_exists_by_checksum, \
-             mock.patch('db.repo.insert_document') as mock_insert_document:
+             mock.patch('routes.documents.repo.document_exists_by_checksum') as mock_document_exists_by_checksum, \
+             mock.patch('routes.documents.repo.insert_document') as mock_insert_document:
 
             # given
             mock_compute_checksum.return_value = "6c99f39e9003a9f6ee089c472790def8f87e5f05fbd0c248e5a7b4aca5aecbb3" 
@@ -134,7 +135,7 @@ class TestDocumentsRoutes(TestCase):
         Should return 500 when DB call fails.
         """
 
-        with mock.patch('db.repo.fetch_documents') as mock_fetch_documents:
+        with mock.patch('routes.documents.repo.fetch_documents') as mock_fetch_documents:
 
             # given
             mock_fetch_documents.side_effect = Exception("DB is down")
