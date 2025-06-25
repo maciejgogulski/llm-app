@@ -59,13 +59,15 @@ def get_documents_route():
 
 @bp.route('/<filename>', methods=['DELETE'])
 def delete_document_route(filename):
-    LOG.info("Recieved delete_document request")
+    LOG.info("Received delete_document request")
     try:
-        repo.delete_document(filename)
-    except Exception as ex: 
-        LOG.error(f"DB error occured: {ex}")
-        return "DB error", 500
-        
-    return f"Deleted document{filename}", 200
+        deleted_count = repo.delete_document(filename)
+        if deleted_count == 0:
+            return "Document not found", 404
 
+    except Exception as ex:
+        LOG.error(f"DB error occurred: {ex}")
+        return "DB error", 500
+
+    return f"Deleted document {filename}", 200
 

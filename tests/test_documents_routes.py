@@ -102,4 +102,102 @@ class TestDocumentsRoutes(TestCase):
             # then
             self.assertEqual(response.status_code, 500)
             self.assertIn(b'DB error', response.data)
-        
+     
+
+
+    def test_get_documents_route_success(self):
+        """
+        Should return 200 with a list of documents.
+        """
+
+        mock_docs = [
+                {"id": 1, "filename": "test1.pdf", "filepath": "/uploads/test1.pdf", "added_at": "2025-06-25 12:00:00", "updated_at": "2025-06-25 12:00:00"},
+            {"id": 2, "filename": "test2.pdf", "filepath": "/uploads/test2.pdf", "added_at": "2025-06-25 12:00:00", "updated_at": "2025-06-25 12:00:00"}
+        ]
+
+        with mock.patch('db.repo.fetch_documents') as mock_fetch_documents:
+
+            # given
+            mock_fetch_documents.return_value = mock_docs
+
+            # when
+            response = self.client.get('/documents/')
+
+            # then
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.get_json(), mock_docs)
+            mock_fetch_documents.assert_called_once()
+
+
+    def test_get_documents_route_db_error(self):
+        """
+        Should return 500 when DB call fails.
+        """
+
+        with mock.patch('db.repo.fetch_documents') as mock_fetch_documents:
+
+            # given
+            mock_fetch_documents.side_effect = Exception("DB is down")
+
+            # when
+            response = self.client.get('/documents/')
+            
+            # then
+            self.assertEqual(response.status_code, 500)
+            self.assertIn(b'DB error', response.data)
+     
+
+    def test_delete_document_route_success(self):
+        """
+        Should return 200 when a document is deleted successfully.
+        """
+
+        with mock.patch('db.repo.delete_document') as mock_delete_document:
+
+            # given
+            mock_delete_document.return_value = None
+            
+            # when
+            response = self.client.delete('/documents/test.pdf')
+            
+            # then
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(b'Deleted document test.pdf', response.data)
+            mock_delete_document.assert_called_once_with('test.pdf')
+
+
+    def test_delete_document_route_not_found(self):
+        """
+        Should return 404 if no document was deleted.
+        """
+
+        with mock.patch('db.repo.delete_document') as mock_delete_document:
+
+            # given
+            mock_delete_document.return_value = 0
+            
+            # when
+            response = self.client.delete('/documents/missing.pdf')
+            
+            # then
+            self.assertEqual(response.status_code, 404)
+            self.assertIn(b'Document not found', response.data)
+
+
+    def test_delete_document_route_db_error(self):
+        """
+        Should return 500 when the DB raises an exception during delete.
+        """
+
+        with mock.patch('db.repo.delete_document') as mock_delete_document:
+            # given
+            mock_delete_document.side_effect = Exception("DB error")
+            
+            # when
+            response = self.client.delete('/documents/test.pdf')
+            
+            # then
+            self.assertEqual(response.status_code, 500)
+            self.assertIn(b'DB error', response.data)
+
+
