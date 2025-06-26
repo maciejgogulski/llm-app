@@ -1,10 +1,10 @@
 # Zarządzanie jakością - przypadki testowe
 
-Ninejszy dokument ma na celu definicje przypadków testowych dla aplikacji **llm_app**.
+Ninejszy dokument ma na celu zdefiniowanie przypadków testowych dla aplikacji **llm_app**.
 
-## Moduł routes.documents
+## Moduł `routes.documents`
 
-### Test case 1 (upload_document_route) - API zwraca 200, gdy PDF zostaje przesłany i pomyślnie zapisany
+### ✔ Test case 1 `upload_document_route` - API zwraca 200, gdy PDF zostaje przesłany i pomyślnie zapisany
 
 **Stan wejściowy (GIVEN):**
 
@@ -27,8 +27,9 @@ Wysłanie żądania `POST` na endpoint `/documents/` z plikiem PDF jako `multipa
 
 Test zakończony sukcesem.
 
+---
 
-### Test case 2 (upload_document_route) - API zwraca 400, gdy PDF nie zostaje przesłany
+### ✔ Test case 2 `upload_document_route` - API zwraca 400, gdy PDF nie zostaje przesłany
 
 **Stan wejściowy (GIVEN):**
 
@@ -47,8 +48,9 @@ Wysłanie żądania `POST` na endpoint `/documents/` bez pliku PDF.
 
 Test zakończony sukcesem.
 
+---
 
-### Test case 3 (upload_document_route) - API zwraca 409, gdy plik z tą samą sumą kontrolną już został zapisany
+### ✔ Test case 3 `upload_document_route` - API zwraca 409, gdy plik z tą samą sumą kontrolną już został zapisany
 
 **Stan wejściowy (GIVEN):**
 
@@ -70,8 +72,9 @@ Wysłanie żądania `POST` na endpoint `/documents/` z plikiem PDF jako `multipa
 
 Test zakończony sukcesem.
 
+---
 
-### Test case 4 (upload_document_route) - API zwraca 500, gdy baza danych nie jest dostępna
+### ✔ Test case 4 `upload_document_route` - API zwraca 500, gdy baza danych nie jest dostępna
 
 **Stan wejściowy (GIVEN):**
 
@@ -94,8 +97,9 @@ Wysłanie żądania `POST` na endpoint `/documents/` z plikiem PDF jako `multipa
 
 Test zakończony sukcesem.
 
+---
 
-### Test case 5 (get_documents_route) - API zwraca 200, z listą dokumentów
+### ✔ Test case 5 `get_documents_route` - API zwraca 200, gdy lista dokumentów zostanie zwrócona z bazy
 
 **Stan wejściowy (GIVEN):**
 
@@ -121,3 +125,96 @@ Wysłanie żądania `GET` na endpoint `/documents/`.
 
 Test zakończony sukcesem.
 
+---
+
+### ✔ Test case 6 `get_documents_route` - API zwraca 500, gdy baza danych nie jest dostępna
+
+**Stan wejściowy (GIVEN):**
+
+- Mock funkcji `fetch_documents` rzuca wyjątek `DB is down`:
+
+**Akcje/Operacje (WHEN):**
+
+Wysłanie żądania `GET` na endpoint `/documents/`.
+
+**Oczekiwany rezultat (THEN):**
+
+- Funkcja `fetch_documents` została wywołana.
+- Odpowiedź HTTP z kodem `500`.
+- Treść odpowiedzi zawiera komunikat z frazą `DB error`.
+
+**Otrzymany rezultat:**
+
+Test zakończony sukcesem.
+
+---
+
+### ✔ Test case 7 `delete_document_route` - API zwraca 200, gdy PDF podany PDF istnieje w bazie
+
+**Stan wejściowy (GIVEN):**
+
+- Mock `delete_document` wykonuje się bez błędów (zwracaja `None`)
+
+**Akcje/Operacje (WHEN):**
+
+Wysłanie żądania `DELETE` na endpoint `/documents/test.pdf`.
+
+**Oczekiwany rezultat (THEN):**
+
+- Funkcja `delete_document` została wywołana z argumentem `test.pdf`.
+- Odpowiedź HTTP z kodem `200`.
+- Treść odpowiedzi zawiera komunikat z frazą `Deleted document test.pdf`.
+
+**Otrzymany rezultat:**
+
+Test zakończony sukcesem.
+
+---
+
+### ✔ Test case 8 `delete_document_route` - API zwraca 500, gdy baza danych nie jest dostępna
+
+**Stan wejściowy (GIVEN):**
+
+- Mock funkcji `delete_document` rzuca wyjątek `DB is down`:
+
+**Akcje/Operacje (WHEN):**
+
+Wysłanie żądania `DELETE` na endpoint `/documents/test.pdf`.
+
+**Oczekiwany rezultat (THEN):**
+
+- Odpowiedź HTTP z kodem `500`.
+- Treść odpowiedzi zawiera komunikat z frazą `DB error`.
+
+**Otrzymany rezultat:**
+
+Test zakończony sukcesem.
+
+---
+
+### ✔ Test case 9 `delete_document_route` - API zwraca 404, gdy PDF podany PDF nie istnieje w bazie
+
+**Stan wejściowy (GIVEN):**
+
+- Mock `delete_document` zwraca `0` (Usuwany pdf nie istnieje w bazie).
+
+**Akcje/Operacje (WHEN):**
+
+Wysłanie żądania `DELETE` na endpoint `/documents/test.pdf`.
+
+**Oczekiwany rezultat (THEN):**
+
+- Odpowiedź HTTP z kodem `404`.
+- Treść odpowiedzi zawiera komunikat z frazą `Document not found`.
+
+**Otrzymany rezultat:**
+
+Test zakończony sukcesem.
+
+---
+
+<br>
+
+## Moduł `llm.rag`
+
+TODO
