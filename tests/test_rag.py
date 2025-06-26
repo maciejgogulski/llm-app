@@ -148,7 +148,7 @@ class TestRag(TestCase):
         """
 
         # given
-        text = "a" * 600
+        text = "a" * 450 + "bc" * 50 + "d" * 100
         doc = Document(page_content=text)
         
         # when
@@ -156,7 +156,7 @@ class TestRag(TestCase):
         
         # then
         self.assertEqual(len(chunks), 2)
-        self.assertEqual(chunks[0].page_content[-100:], chunks[1].page_content[:100])  # overlap
+        self.assertEqual(chunks[0].page_content[-50:], chunks[1].page_content[:50])  # overlap
     
 
     @mock.patch.dict(os.environ, {"EMBEDDING_MODEL": "mock-embed-model"}, clear=True)

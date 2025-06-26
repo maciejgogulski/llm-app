@@ -217,4 +217,207 @@ Test zakończony sukcesem.
 
 ## Moduł `llm.rag`
 
-TODO
+### ✔ Test case 10 `perform_rag` - Sprawdzenie, czy metoda poprawnie integruje proces RAG
+
+**Stan wejściowy (GIVEN):**
+
+- Mock `fetch_documents` zwraca `[{'filename': 'doc1.pdf'}]` (Istnieją dokumenty w bazie)
+- Mock `load_all_documents` zwraca `['doc content']` (Wyciągnięcie zawartości z dokumentu na dysku)
+- Mock `chunk_data` zwraca `['chunk1', 'chunk2']` (Zawartość dokumentu zostaje podzielona na części)
+- Mock `vectorize_documents` zwraca `vectorsotre` (Przekonwertowanie zawartości dokumentu na embeddingi)
+- Mock `build_qa_chain` zwraca `qa_chain` (Stworzenie łańcucha: Pytanie → Wyszukiwanie w wektorowej bazie wiedzy → Kontekst + pytanie → LLM → Odpowiedź)
+- Mock `run_chain` zwraca `final_answer` (Zwrócenie ostatecznej odpowiedzi)
+
+**Akcje/Operacje (WHEN):**
+
+Wywołanie funkcji `perform_rag` z parametrem `What is AI?`
+
+**Oczekiwany rezultat (THEN):**
+
+- `perform_rag` zwróci `final_answer`.
+
+**Otrzymany rezultat:**
+
+Test zakończony sukcesem.
+
+---
+
+### ✔ Test case 11 `perform_rag` - Sprawdzenie, czy metoda rzuca wyjątek, gdy nie ma ustawionej zmiennej środowiskowej wskazującej używany model językowy
+
+**Stan wejściowy (GIVEN):**
+
+- Zmienna środowiskowa `MODEL` nie jest ustawiona (`os.environ` jest puste)
+- Wszystkie zależności (`fetch_documents`, `load_all_documents`, `chunk_data`, `vectorize_documents`, `build_qa_chain`) zostały zamockowane i zwracają atrapowe obiekty
+- Zmienna prompt zawiera zapytanie: `"What is AI?"`
+
+**Akcje/Operacje (WHEN):**
+
+Wywołanie funkcji `perform_rag` z parametrem `What is AI?`
+
+**Oczekiwany rezultat (THEN):**
+
+- `perform_rag` rzuca wyjątkiem `ValueError` o treści `MODEL environment variable is not set`.
+
+**Otrzymany rezultat:**
+
+Test zakończony sukcesem.
+
+---
+
+### ✔ Test case 12 `load_all_documents` - Sprawdzenie wczytywania i parsowania treści dokumentów
+
+**Stan wejściowy (GIVEN):**
+
+- Zmienna `input_rows` o z danymi dotyczącymi dwóch dokumentów: 
+
+    ```
+        input_rows = [
+            {"filename": "doc1.pdf"},
+            {"filename": "doc2.pdf"}
+        ]
+    ```
+
+- Mock `load_pdf` zwraca treść tych dokumentów:
+
+    ```
+        [Document(page_content="Content from doc1 page 1")],
+        [Document(page_content="Content from doc2 page 1"), Document(page_content="Content from doc2 page 2")]
+
+    ```
+
+**Akcje/Operacje (WHEN):**
+
+Wywołanie funkcji `load_all_documents` z parametrem `input_rows`
+
+**Oczekiwany rezultat (THEN):**
+
+Zwrócone zostaje
+- lista obiektów o rozmiarze `3`
+- 1\. element listy `"page_content": "Content from doc1 page 1"`
+- 2\. element listy `"page_content": "Content from doc2 page 1"`
+- 3\. element listy `"page_content": "Content from doc2 page 2"`
+
+**Otrzymany rezultat:**
+
+Test zakończony sukcesem.
+
+---
+
+### ✔ Test case 13 `load_pdf` - Sprawdzenie załadowania pliku z file systemu
+
+**Stan wejściowy (GIVEN):**
+
+- Zmienna środowiskowa `"DOCUMENT_STORAGE_PATH"` ma wartość `tests/resources/pdf`
+- Na dysku w ścieżce `tests/resources/pdf` w głównym katalogu projektu znajduje się plik `Profile.pdf`
+
+**Akcje/Operacje (WHEN):**
+
+Wywołanie funkcji `load_pdf` z parametrem `Profile.pdf`
+
+**Oczekiwany rezultat (THEN):**
+
+- Zwrócony obiekt `documents` jest typu `list`
+- Wszyskie elementy listy to obiekty `Document`
+- Lista nie jest pusta
+
+**Otrzymany rezultat:**
+
+Test zakończony sukcesem.
+
+---
+
+### ✔ Test case 14 `load_pdf` - Sprawdzenie, czy metoda rzuca wyjątek, gdy nie ma ustawionej zmiennej środowiskowej wskazującej ścieżkę do katalogu z dokumentami na dysku
+
+**Stan wejściowy (GIVEN):**
+
+- Zmienna środowiskowa `"DOCUMENT_STORAGE_PATH"` nie jest ustawiona (`os.environ` jest puste)
+
+**Akcje/Operacje (WHEN):**
+
+Wywołanie funkcji `load_pdf` z parametrem `Profile.pdf`
+
+**Oczekiwany rezultat (THEN):**
+
+- `load_pdf` rzuca wyjątkiem `ValueError` o treści `DOCUMENT_STORAGE_PATH environment variable is not set`.
+
+**Otrzymany rezultat:**
+
+Test zakończony sukcesem.
+
+---
+
+### ✔ Test case 15 `chunk_data` - Sprawdzenie poprawności dzielenia treści dokumentów na części
+
+**Stan wejściowy (GIVEN):**
+
+- Zmienna `doc` typu `Document` z długim tekstem = `"This is a test sentence. " * 100`
+
+**Akcje/Operacje (WHEN):**
+
+Wywołanie funkcji `chunk_data` z parametrem `doc`
+
+**Oczekiwany rezultat (THEN):**
+
+- Zwrócony obiekt typu `list`
+- Lista ma rozmiar większy niż `1`
+- Wszyskie elementy listy to obiekty `Document`
+- Każdy `Dcoument` w liście zawiera tekst o długości nie większej niż `500` znaków.
+
+**Otrzymany rezultat:**
+
+Test zakończony sukcesem.
+
+---
+
+### ✔ Test case 16 `chunk_data` - Sprawdzenie czy części dokumentów "na siebie nachodzą"
+
+**Stan wejściowy (GIVEN):**
+
+- Zmienna `doc` typu `Document` z wystarczająco długim tekstem = `text = "a" * 450 + "bc" * 50 + "c" * 100`
+
+**Akcje/Operacje (WHEN):**
+
+Wywołanie funkcji `chunk_data` z parametrem `doc`
+
+**Oczekiwany rezultat (THEN):**
+
+- Zwrócona lista ma roziar `2`
+- Ostatnie **50** znaków pierwszej części jest, takie samo jak pierwsze **50** znaków drugiej.
+
+**Otrzymany rezultat:**
+
+Test zakończony sukcesem.
+
+---
+
+### ✔ Test case 17 `vectorize_documents` - Sprawdzenie, czy w metodzie jest wywoływane `faiss` z poprawnymi argumentami
+
+**Stan wejściowy (GIVEN):**
+
+- Zmienna środowiskowa `EMBEDDING_MODEL` ma wartość `mock-embed-model`
+- Mock `OllamaEmbeddings` zwraca obiekt atrapę `mock_embed_instance`
+- Mock `FAISS` zwraca obiekt atrapę `mock_vectorstore`
+- Zmienna `chunks` z listą dokumentów:
+    ```
+        chunks = [
+            Document(page_content="Chunk 1"),
+            Document(page_content="Chunk 2")
+        ]
+    ```
+
+**Akcje/Operacje (WHEN):**
+
+Wywołanie funkcji `vectorize_embeddings` z parametrem `chunks`
+
+**Oczekiwany rezultat (THEN):**
+
+- `OllamaEmbeddings` jest wywołane raz z parametrem `model="mock-embed-model"`
+- `FAISS` jest wywołane raz z parametrami `chunks` i  `mock_embed_instance`
+- Funkcja zwraca ten sam obiekt co `mock_vectorstore`
+
+**Otrzymany rezultat:**
+
+Test zakończony sukcesem.
+
+---
+
