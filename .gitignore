@@ -3,4 +3,5 @@
 __pycache__/
 .coverage
 /htmlcov
+/html-report
 /documents

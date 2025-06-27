@@ -1,5 +1,6 @@
 import io
-from unittest import TestCase, mock
+import HtmlTestRunner
+from unittest import TestCase, mock, main
 from main import create_app
 
 class TestDocumentsRoutes(TestCase):
@@ -200,5 +201,4 @@ class TestDocumentsRoutes(TestCase):
             # then
             self.assertEqual(response.status_code, 500)
             self.assertIn(b'DB error', response.data)
-
 

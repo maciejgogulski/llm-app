@@ -1,5 +1,6 @@
 import os
-from unittest import TestCase, mock
+import HtmlTestRunner
+from unittest import TestCase, mock, main
 from llm.rag import perform_rag, load_all_documents, load_pdf, chunk_data, vectorize_documents, build_qa_chain, run_chain
 from langchain_core.documents import Document
 
@@ -248,5 +249,4 @@ class TestRag(TestCase):
         # then
         mock_chain.assert_called_once_with(prompt)
         self.assertEqual(result, "Final answer")
-
 
