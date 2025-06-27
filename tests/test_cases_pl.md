@@ -248,7 +248,7 @@ Test zakończony sukcesem.
 
 - Zmienna środowiskowa `MODEL` nie jest ustawiona (`os.environ` jest puste)
 - Wszystkie zależności (`fetch_documents`, `load_all_documents`, `chunk_data`, `vectorize_documents`, `build_qa_chain`) zostały zamockowane i zwracają atrapowe obiekty
-- Zmienna prompt zawiera zapytanie: `"What is AI?"`
+- Zmienna `prompt` zawiera zapytanie: `"What is AI?"`
 
 **Akcje/Operacje (WHEN):**
 
@@ -309,6 +309,7 @@ Test zakończony sukcesem.
 
 - Zmienna środowiskowa `"DOCUMENT_STORAGE_PATH"` ma wartość `tests/resources/pdf`
 - Na dysku w ścieżce `tests/resources/pdf` w głównym katalogu projektu znajduje się plik `Profile.pdf`
+- Nazwa pliku `Profile.pdf`
 
 **Akcje/Operacje (WHEN):**
 
@@ -331,6 +332,7 @@ Test zakończony sukcesem.
 **Stan wejściowy (GIVEN):**
 
 - Zmienna środowiskowa `"DOCUMENT_STORAGE_PATH"` nie jest ustawiona (`os.environ` jest puste)
+- Nazwa pliku `Profile.pdf`
 
 **Akcje/Operacje (WHEN):**
 
@@ -407,7 +409,7 @@ Test zakończony sukcesem.
 
 **Akcje/Operacje (WHEN):**
 
-Wywołanie funkcji `vectorize_embeddings` z parametrem `chunks`
+Wywołanie funkcji `vectorize_documents` z parametrem `chunks`
 
 **Oczekiwany rezultat (THEN):**
 
@@ -421,3 +423,72 @@ Test zakończony sukcesem.
 
 ---
 
+### ✔ Test case 18 `vectorize_documents` - Sprawdzenie, czy metoda rzuca wyjątek, gdy nie ma ustawionej zmiennej środowiskowej wskazującej model do embeddingów
+
+**Stan wejściowy (GIVEN):**
+
+- Zmienna środowiskowa `EMBEDDING_MODEL` nie jest ustawiona (`os.environ` jest puste)
+- Zmienna `chunks` z listą dokumentów:
+    ```
+        chunks = [Document(page_content="Chunk 1")]
+    ```
+
+**Akcje/Operacje (WHEN):**
+
+Wywołanie funkcji `vectorize_documents` z parametrem `chunks`
+
+**Oczekiwany rezultat (THEN):**
+
+- `vectorize_documents` rzuca wyjątkiem `ValueError` o treści `EMBEDDING_MODEL environment variable is not set`.
+
+**Otrzymany rezultat:**
+
+Test zakończony sukcesem.
+
+---
+
+### ✔ Test case 19 `build_qa_chain` - Poprawne skonstruowanie RetrievalQA z modelu LLM i retrievera
+
+**Stan wejściowy (GIVEN):**
+
+- Mock `mock_vectorstore` (obiekt atrapa) po wywołaniu funkcji `as_retriever`  zwraca obiekt atrapę `mock_retriever`
+- Mock `mock_retrieval_qa` (obiekt atrapa) po wywołaniu funkcji `from_chain_type` zwraca obiekt atrapę `mock_chain`
+- Tworzony jest mock `mock_model` (obiekt atrapa)
+
+**Akcje/Operacje (WHEN):**
+
+Wywołanie funkcji `build_qa_chain` z parametrami `mock_model` i `mock_vectorstore`
+
+**Oczekiwany rezultat (THEN):**
+
+- Funkcja `as_retriever` z `mock_vectorstore` jest wywołana raz.
+- Funkcja `from_chain_type` jest wywołana raz z parametrami `llm=mock_model`, `retriever=mock_retriever`, `return_source_documents=False`
+- Zwrócona wartość to taki sam obiekt jak `mock_chain`
+
+**Otrzymany rezultat:**
+
+Test zakończony sukcesem.
+
+---
+
+### ✔ Test case 20 `run_chain` - Sprawdzenie, czy metoda wywołuje obiekt `chain` i zwraca odpowiedź
+
+**Stan wejściowy (GIVEN):**
+
+- Tworzony jest mock `mock_chain` zwracający ciąg znaków `Final answer`
+- Zmienna `prompt` o wartości `What is AI?`
+
+**Akcje/Operacje (WHEN):**
+
+Wywołanie funkcji `run_chain` z parametrami `mock_chain` i `prompt`
+
+**Oczekiwany rezultat (THEN):**
+
+- Obiekt `mock_chain` jest wywoływany raz z parametrem `prompt`
+- Zwrócona wartość to `Final answer`
+
+**Otrzymany rezultat:**
+
+Test zakończony sukcesem.
+
+---
