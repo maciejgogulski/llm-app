@@ -1,6 +1,9 @@
 # Zarządzanie jakością - przypadki testowe
 
 Ninejszy dokument ma na celu zdefiniowanie przypadków testowych dla aplikacji **llm_app**.
+Aplikacja obsługuje dwa sposoby integracji z LLM uruchomionym na platformie **Ollama** - przesłanie zwykłego zapytania oraz użycie **RAG** (Retrieval Augmented Generation).
+
+Przypadki testowe pokrywają proces RAG oraz zarządzanie bazą dokumentów.
 
 ## Moduł `routes.documents`
 
