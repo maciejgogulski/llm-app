@@ -1,0 +1,38 @@
+# Ignore version control
+.git
+.gitignore
+
+# Ignore Python environment
+.venv
+__pycache__
+
+# Ignore coverage and test reports
+.coverage
+htmlcov
+html-report
+
+# Ignore environment files (optional)
+.env
+
+# Ignore test code
+tests
+run_tests.py
+requirements_test.txt
+
+# Ignore local databases and temporary files
+vectorstore
+sql
+documents
+
+# Ignore other possible build artifacts
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.sqlite3
+
+# Ignore frontend 
+frontend
+
+# Optional: Ignore Docker Compose files
+docker-compose.yaml

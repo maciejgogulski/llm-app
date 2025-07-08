@@ -1,7 +1,8 @@
 #!/bin/bash
+docker run -d --name llm-app \
+    --env-file .env \
+    --network host \
+    -v "$(pwd)/documents:/app/documents" \
+    -v "$(pwd)/vectorstore:/app/vectorstore" \
+    llm-security:0.0.1-SNAPSHOT
 
-docker run -p 5000:5000 \
-  -e SERVER_PORT='5000' \
-  -e FLASK_DEBUG=true \
-  -e GREETING='DOCKERIZED LLM-SECURITY' \
-  llm-security:0.0.1-SNAPSHOT
